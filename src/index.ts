@@ -3,14 +3,37 @@ import cors from "cors";
 import type { Express, Request, Response } from "express";
 import { pets, Pet } from "./data/pets.js";
 
+type PetQueryParams = {
+  species?: string;
+  adopted?: string;
+};
+
 const PORT = 8000;
 const app: Express = express();
 
 app.use(cors());
 
-app.get("/", (req: Request, res: Response<Pet[]>): void => {
-  res.json(pets);
-});
+app.get(
+  "/",
+  (
+    req: Request<{}, unknown, {}, PetQueryParams>,
+    res: Response<Pet[]>
+  ): void => {
+    const { species, adopted } = req.query;
+    let filteredPets: Pet[] = pets;
+    if (species) {
+      filteredPets = filteredPets.filter(
+        (p: Pet) => p.species.toLowerCase() === species.toLowerCase()
+      );
+    }
+    if (adopted) {
+      filteredPets = filteredPets.filter(
+        (p: Pet) => p.adopted === JSON.parse(adopted)
+      );
+    }
+    res.json(filteredPets);
+  }
+);
 
 app.get(
   "/:id",
