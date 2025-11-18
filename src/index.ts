@@ -12,10 +12,19 @@ app.get("/", (req: Request, res: Response<Pet[]>): void => {
   res.json(pets);
 });
 
-app.get("/:id", (req: Request<{ id: string }>, res: Response) => {
-  const pet = pets.find((p: Pet) => p.id === parseInt(req.params.id));
-  res.json(pet);
-});
+app.get(
+  "/:id",
+  (req: Request<{ id: string }>, res: Response<Pet | { message: string }>) => {
+    const pet: Pet | undefined = pets.find(
+      (p: Pet) => p.id === parseInt(req.params.id)
+    );
+    pet
+      ? res.json(pet)
+      : res
+          .status(404)
+          .json({ message: `Pet with id ${req.params.id} not found` });
+  }
+);
 
 app.use((req: Request, res: Response<{ message: string }>): void => {
   res.status(404).json({ message: `Endpoint ${req.originalUrl} not found` });
