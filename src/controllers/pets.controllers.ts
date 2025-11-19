@@ -45,3 +45,19 @@ export const getPets = (
 
   res.json(filteredPets);
 };
+
+export const getPetById = (
+  req: Request<{ id: string }>,
+  res: Response<Pet | { message: string }>
+): void => {
+  const { id } = req.params;
+  const pet: Pet | undefined = pets.find(
+    (pet: Pet): boolean => pet.id.toString() === id
+  );
+
+  if (pet) {
+    res.json(pet);
+  } else {
+    res.status(404).json({ message: "No pet with that ID" });
+  }
+};
