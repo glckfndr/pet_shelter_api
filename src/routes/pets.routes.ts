@@ -1,59 +1,13 @@
 import express from "express";
 import type { Router, Request, Response } from "express";
-import { pets } from "../data/pets";
+
 import type { Pet } from "../data/pets";
+import { pets } from "../data/pets";
+import { getPets } from "../controllers/pets.controller";
+
 export const petRouter: Router = express.Router();
 
-type PetQueryParams = {
-  species?: string;
-  adopted?: "true" | "false";
-  minAge?: string;
-  maxAge?: string;
-};
-
-/*
-CHALLENGE: Handle all pet-related errors by
-           exporting/importing the relevant data/types
-*/
-
-petRouter.get(
-  "/",
-  (
-    req: Request<{}, unknown, {}, PetQueryParams>,
-    res: Response<Pet[]>
-  ): void => {
-    const { species, adopted, minAge, maxAge } = req.query;
-
-    let filteredPets: Pet[] = pets;
-
-    if (species) {
-      filteredPets = filteredPets.filter(
-        (pet: Pet): boolean =>
-          pet.species.toLowerCase() === species.toLowerCase()
-      );
-    }
-
-    if (adopted) {
-      filteredPets = filteredPets.filter(
-        (pet: Pet): boolean => pet.adopted === JSON.parse(adopted)
-      );
-    }
-
-    if (minAge) {
-      filteredPets = filteredPets.filter(
-        (pet: Pet): boolean => pet.age >= JSON.parse(minAge)
-      );
-    }
-
-    if (maxAge) {
-      filteredPets = filteredPets.filter(
-        (pet: Pet): boolean => pet.age <= JSON.parse(maxAge)
-      );
-    }
-
-    res.json(filteredPets);
-  }
-);
+petRouter.get("/", getPets);
 
 petRouter.get(
   "/:id",
